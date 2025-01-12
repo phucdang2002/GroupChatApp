@@ -5,7 +5,7 @@ const GroupScreen = ({ route }) => {
     const { name } = route.params
     const [messages, setMessages] = useState([])
     const [message, setMessage] = useState('')
-    const ws = new WebSocket('ws://192.168.1.3:8084')
+    const ws = new WebSocket('ws://localhost:8084')
     useEffect(() => {
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: 'connect', name: name }))
