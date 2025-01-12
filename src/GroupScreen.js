@@ -5,7 +5,7 @@ const GroupScreen = ({ route }) => {
     const { name } = route.params
     const [messages, setMessages] = useState([])
     const [message, setMessage] = useState('')
-    const ws = new WebSocket('ws://192.168.1.2:8084')
+    const ws = new WebSocket('ws://192.168.1.3:8084')
     useEffect(() => {
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: 'connect', name: name }))
@@ -24,14 +24,17 @@ const GroupScreen = ({ route }) => {
         setMessage('')
     }
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, marginTop: 50 }}>
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => 
-                    item.type === 'connect' ? <Text>{item.message}</Text> : (
-                        <View style={name === item.name ? styles.sender : styles.receiver}>
-                            <Text>{item.name}: {item.message}</Text>
+                renderItem={({ item }) =>
+                    item.type === 'connect' ? <Text style={{ textAlign: "center" }}>{item.message}</Text> : (
+                        <View style={[{margin: 20},name === item.name ? styles.sender : styles.receiver]}>
+                            <Text>{item.name}</Text>
+                            <View style={[styles.content, { backgroundColor: name === item.name ? '#24786D' : '#ddd' }]}>
+                                <Text>{item.message}</Text>
+                            </View>
                         </View>
                     )
                 }
@@ -58,20 +61,20 @@ const styles = StyleSheet.create({
         padding: 15,
         borderTopWidth: 3,
         borderTopColor: '#ddd',
+        zIndex: 100,
+        backgroundColor: '#FFF'
+    },
+    content: {
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 10,
     },
     sender: {
-        backgroundColor: '#24786D',
-        padding: 10,
-        borderRadius: 10,
-        alignSelf: 'flex-end',
-        marginBottom: 10,
+        alignSelf: 'flex-end', 
+        alignItems: 'flex-end'
     },
     receiver: {
-        backgroundColor: '#ddd',
-        padding: 10,
-        borderRadius: 10,
-        alignSelf: 'flex-start',
-        marginBottom: 10,
+        alignSelf: 'flex-start'
     },
     textBox: {
         width: '70%',
