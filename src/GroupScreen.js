@@ -5,22 +5,20 @@ const GroupScreen = ({ route }) => {
     const { name } = route.params
     const [messages, setMessages] = useState([])
     const [message, setMessage] = useState('')
-    const ws = new WebSocket('ws://192.168.1.3:8084')
+    const ws = new WebSocket('ws://192.168.1.2:8084')
     useEffect(() => {
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: 'connect', name: name }))
         }
         ws.onmessage = (e) => {
             const data = JSON.parse(e.data)
-            console.log(data);
-            setMessages([...messages, data])
-            console.log(messages);
+            setMessages((prev) => [...prev, data])
         }
         return () => {
             ws.close();
         };
 
-    }, [])
+    }, [name])
     const sendMessage = () => {
         ws.send(JSON.stringify({ type: 'message', name: name, message: message }))
         setMessage('')
@@ -30,13 +28,13 @@ const GroupScreen = ({ route }) => {
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => {
+                renderItem={({ item }) => 
                     item.type === 'connect' ? <Text>{item.message}</Text> : (
                         <View style={name === item.name ? styles.sender : styles.receiver}>
                             <Text>{item.name}: {item.message}</Text>
                         </View>
                     )
-                }}
+                }
             />
             <View style={styles.messageBox}>
                 <Icon name="attach-file" size={20} color="#000" />
@@ -62,7 +60,6 @@ const styles = StyleSheet.create({
         borderTopColor: '#ddd',
     },
     sender: {
-        width: '100%',
         backgroundColor: '#24786D',
         padding: 10,
         borderRadius: 10,
@@ -70,7 +67,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     receiver: {
-        width: '100%',
         backgroundColor: '#ddd',
         padding: 10,
         borderRadius: 10,
